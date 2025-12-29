@@ -1,0 +1,1964 @@
+<!DOCTYPE html>
+
+<html lang="hu">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Villanyszerelő – Interaktív gyakorló teszt</title>
+<style>
+    :root {
+      --bg: #0b0c10;
+      --card: #12141c;
+      --muted: #9aa3b2;
+      --text: #eef2ff;
+      --accent: #7c3aed;
+      --accent2: #22c55e;
+      --danger: #ef4444;
+      --border: rgba(255,255,255,.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1000px 600px at 20% 10%, rgba(124,58,237,.22), transparent 60%),
+                  radial-gradient(900px 500px at 90% 20%, rgba(34,197,94,.18), transparent 55%),
+                  var(--bg);
+      color: var(--text);
+    }
+    a { color: inherit; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 24px; }
+    .top {
+      display:flex; gap:12px; align-items: baseline; justify-content: space-between; flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .title { font-size: 20px; font-weight: 700; letter-spacing: .2px; }
+    .meta { color: var(--muted); font-size: 13px; }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    .grid { display:grid; grid-template-columns: 1.2fr .8fr; gap: 14px; }
+    @media (max-width: 880px) { .grid { grid-template-columns: 1fr; } }
+    .row { display:flex; gap: 10px; align-items:center; flex-wrap: wrap; }
+    .btn {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: 650;
+      transition: transform .05s ease, background .15s ease, border-color .15s ease;
+      user-select: none;
+    }
+    .btn:hover { background: rgba(255,255,255,.09); }
+    .btn:active { transform: translateY(1px); }
+    .btn.primary { background: rgba(124,58,237,.22); border-color: rgba(124,58,237,.40); }
+    .btn.primary:hover { background: rgba(124,58,237,.28); }
+    .btn.good { background: rgba(34,197,94,.16); border-color: rgba(34,197,94,.35); }
+    .btn.danger { background: rgba(239,68,68,.14); border-color: rgba(239,68,68,.35); }
+    .pill {
+      display:inline-flex; align-items:center; gap:6px;
+      padding: 6px 10px; border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      background: rgba(255,255,255,.03);
+    }
+    input[type="number"], select {
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 12px;
+      outline: none;
+      min-width: 140px;
+    }
+    label.chk {
+      display:flex; gap:10px; align-items:center;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      cursor: pointer;
+    }
+    label.chk:hover { background: rgba(255,255,255,.06); }
+    .small { font-size: 13px; color: var(--muted); }
+    .qtext { font-size: 16px; line-height: 1.45; white-space: pre-wrap; }
+    .opt {
+      display:flex; gap:10px; align-items:flex-start;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .opt:hover { background: rgba(255,255,255,.06); }
+    .opt input { margin-top: 2px; }
+
+    .opt.correct { border-color: var(--accent2); background: rgba(90,255,180,.08); }
+    .opt.wrong { border-color: var(--danger); background: rgba(255,80,80,.08); }
+    .opt.chosen { box-shadow: 0 0 0 2px rgba(255,255,255,.06) inset; }
+
+    .explainbox { margin-top:12px; padding:12px; border:1px solid var(--border); border-radius:14px; background: rgba(255,255,255,.03); }
+    .explainbox .title { font-weight: 900; margin-bottom:6px; }
+    .explainbox .hint { color: var(--muted); font-size: 13px; margin-top:8px; }
+    .explainbox ul { margin:8px 0 0 18px; }
+    .explainbox code { background: rgba(0,0,0,.25); padding: 1px 6px; border-radius: 8px; }
+
+    .progress {
+      height: 10px;
+      background: rgba(255,255,255,.07);
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      overflow:hidden;
+      margin-top: 12px;
+    }
+    .bar { height: 100%; width:0%; background: rgba(124,58,237,.65); }
+    .kpi { display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; }
+    .kpi .card { padding: 12px; }
+    .kpi .big { font-size: 22px; font-weight: 800; }
+    .kpi .lbl { color: var(--muted); font-size: 12px; }
+    .hidden { display:none !important; }
+    .divider { height: 1px; background: var(--border); margin: 14px 0; }
+    .reviewItem {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px;
+      background: rgba(255,255,255,.03);
+      margin-top: 10px;
+    }
+    .tag-ok { color: var(--accent2); font-weight: 750; }
+    .tag-bad { color: var(--danger); font-weight: 750; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+  
+    .qmedia{margin:12px 0 8px 0;}
+    .qmedia img{max-width:100%;height:auto;display:block;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.18);}
+
+
+  /* Ensure multi-line questions render correctly */
+  #qText{white-space:pre-wrap; word-break:break-word;}
+
+
+/* --- v20 polish: diagnostics + resume + modal --- */
+.hr{height:1px;background:rgba(255,255,255,.08);margin:18px 0;}
+.subcard{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);padding:14px;border-radius:16px;}
+.subhead{font-weight:700;margin-bottom:6px;}
+.modal{position:fixed;inset:0;display:none;z-index:9999;}
+.modal[aria-hidden="false"]{display:block;}
+.modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter: blur(3px);}
+.modal-panel{position:relative;max-width:860px;margin:6vh auto 0; background:rgba(18,18,24,.96);border:1px solid rgba(255,255,255,.12);
+  border-radius:20px; box-shadow:0 25px 80px rgba(0,0,0,.5); overflow:hidden;}
+.modal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.08);}
+.modal-title{font-size:18px;font-weight:800;letter-spacing:.2px;}
+.modal-sub{font-size:13px;opacity:.75;margin-top:2px;}
+.modal-body{padding:14px 18px;max-height:62vh;overflow:auto;}
+.modal-foot{padding:12px 18px;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:flex-end;}
+.icon-btn{background:transparent;border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.9);border-radius:12px;padding:6px 10px;cursor:pointer;}
+.icon-btn:hover{background:rgba(255,255,255,.06);}
+.diag-item{padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.03);margin-bottom:10px;}
+.diag-item .t{font-weight:700;}
+.diag-item .m{opacity:.78;margin-top:2px;line-height:1.35;}
+.diag-tag{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.14);opacity:.9;margin-left:8px;}
+.diag-tag.bad{background:rgba(255,70,70,.12);border-color:rgba(255,70,70,.28);}
+.diag-tag.warn{background:rgba(255,180,70,.10);border-color:rgba(255,180,70,.24);}
+
+/* v28 additions */
+.table { width:100%; border-collapse:collapse; margin-top:10px; }
+.table th, .table td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--border); vertical-align:top; }
+.table th { font-size:12px; color: var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:.04em; }
+.toast { position:fixed; right:18px; top:18px; z-index:9999; background:rgba(15,23,42,.95); border:1px solid var(--border); padding:10px 12px; border-radius:14px; box-shadow:0 18px 60px rgba(0,0,0,.45); max-width:360px; }
+.toast.hidden { display:none; }
+.toast .t1{ font-weight:900; }
+.toast .t2{ font-size:12px; color:var(--muted); margin-top:2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top">
+<div>
+<div class="title">Villanyszerelő – interaktív gyakorló teszt</div>
+<div class="meta">Összes kérdés: <span id="allCount"></span> • Generálva: <span id="genAt"></span></div>
+</div>
+<div class="row">
+<span class="pill">Offline HTML</span>
+<span class="pill">Pontozás + kiértékelés</span>
+<span class="pill">Véletlen sorrend</span>
+</div>
+</div>
+<!-- SETUP -->
+<div class="card" id="setup">
+<div class="grid">
+<div>
+<div style="font-weight:800; font-size:16px;">Beállítások</div>
+<div class="divider"></div>
+<div class="card subcard" id="bankLoadCard">
+  <div class="subhead">Kérdésbank betöltése</div>
+  <div class="muted">
+    Alapból a program megpróbálja betölteni a <b>questions.json</b> fájlt. Ha a HTML-t csak megnyitod (file://),
+    a böngésző ezt tilt(hat)ja — ilyenkor válaszd ki kézzel a fájlt.
+  </div>
+  <div class="row" style="margin-top:10px; gap:10px; flex-wrap:wrap;">
+    <input id="bankFile" type="file" accept="application/json"/>
+    <button class="btn" id="reloadBankBtn" type="button">Újratöltés</button>
+  </div>
+  <div class="small" id="bankStatus" style="margin-top:6px;"></div>
+</div>
+
+<div class="row" style="gap:12px;">
+<div>
+<div class="small">Kérdések száma</div>
+<input id="numQ" min="5" step="1" type="number" value="20"/>
+</div>
+<div>
+<div class="small">Időzítő (perc)</div>
+<input id="timerMin" min="0" step="1" title="0 = kikapcsolva" type="number" value="0"/>
+</div>
+<div style="min-width:220px;">
+<div class="small">Téma szűrő</div>
+<select id="topicSel" multiple="" size="6" style="width:100%; min-height: 160px;"></select>
+<div class="small" style="margin-top:6px;">Tipp: Ctrl/⌘ katt = több téma.</div>
+</div>
+</div>
+<div class="divider"></div>
+<div class="row" style="gap:12px; flex-wrap:wrap;">
+  <div style="min-width:240px;">
+    <div class="small">Kérdésforrás</div>
+    <select id="sourceFilter" style="width:100%;">
+      <option value="all">Összes</option>
+      <option value="wrong">Korábban hibás</option>
+      <option value="weak">Gyengék (≤60%)</option>
+      <option value="new">Újak</option>
+      <option value="bookmarked">Megjelöltek ★</option>
+      <option value="due">Esedékes ismétlő</option>
+    </select>
+  </div>
+  <div style="flex:1; min-width:260px;">
+    <div class="small">Keresés (szöveg/ID)</div>
+    <input id="searchText" type="text" placeholder="pl. FI-relé, hurokimpedancia, 17, PEN…"/>
+  </div>
+</div>
+<div class="divider"></div>
+<div class="row">
+<label class="chk"><input checked="" id="shuffle" type="checkbox"/> Véletlen sorrend</label>
+<label class="chk"><input id="examMode" type="checkbox"/> Vizsga mód (nincs azonnali visszajelzés)</label>
+<label class="chk"><input id="learnMode" type="checkbox"/> Tanuló mód (magyarázat + kiemelés)</label>
+<label class="chk"><input id="requireCheck" type="checkbox"/> Következő csak ellenőrzés után</label>
+<label class="chk"><input checked="" id="showMeta" type="checkbox"/> Mutassa az oldalszámot/témát</label>
+</div>
+
+<div class="row" style="gap:12px; flex-wrap:wrap; margin-top:8px;">
+  <label class="chk"><input id="topicQuota" type="checkbox"/> Téma szerinti elosztás</label>
+  <label class="chk"><input checked id="min1Topic" type="checkbox"/> Min. 1 kérdés / téma (ha fér)</label>
+  <label class="chk"><input id="noBack" type="checkbox"/> Nincs visszalépés</label>
+  <label class="chk"><input id="imgOnly" type="checkbox"/> Csak képes kérdések</label>
+  <div style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+    <div>
+      <div class="small">Pont min</div>
+      <input id="ptsMin" type="number" min="0" step="1" placeholder="0" style="width:110px;"/>
+    </div>
+    <div>
+      <div class="small">Pont max</div>
+      <input id="ptsMax" type="number" min="0" step="1" placeholder="pl. 5" style="width:110px;"/>
+    </div>
+  </div>
+</div>
+
+<div class="row" id="examOpts" style="gap:12px; flex-wrap:wrap; display:none; margin-top:8px;">
+  <div>
+    <div class="small">Siker küszöb (%)</div>
+    <input id="passPct" min="0" max="100" step="1" type="number" value="70"/>
+  </div>
+  <div>
+    <div class="small">Vizsga idő (perc)</div>
+    <span class="muted">a fenti Időzítő mezőt használja</span>
+  </div>
+</div>
+<div class="small muted" id="examHint" style="display:none; margin-top:6px;">Vizsga módban nincs azonnali visszajelzés, és az idő lejártakor automatikus befejezés.</div>
+<div class="divider"></div>
+<div class="row" style="gap:10px; flex-wrap:wrap;">
+<button class="btn primary" id="startBtn">Teszt indítása</button>
+<button class="btn" id="sampleBtn">10 kérdés (gyors)</button>
+<button class="btn" id="wrongPracticeBtn">Hibásak gyakorlása</button>
+<button class="btn" id="bookmarkedPracticeBtn">Megjelöltek ★</button>
+<a class="btn" href="editor.html" target="_blank" rel="noopener">Kérdésbank szerkesztő</a>
+</div>
+<div class="small" style="margin-top:10px;">
+            Megjegyzés: több kérdésnél a szövegben szerepel, hogy „Ábra/kép a PDF-ben.” – itt a PDF képeit nem tudjuk automatikusan megjeleníteni, de a kérdés marad.
+          </div>
+</div>
+<div>
+<div style="font-weight:800; font-size:16px;">Hogyan működik?</div>
+<div class="divider"></div>
+<div class="small">
+            • Kattints a helyes válaszra (vagy több helyes esetén több opcióra).<br/>
+            • Navigálhatsz előre/hátra, jelölhetsz meg kérdést „későbbre”.<br/>
+            • A végén kiértékelés + hibák listája.<br/><br/>
+            Ha szeretnéd, később tudok készíteni:
+            <ul>
+<li>Google Forms / Microsoft Forms verziót</li>
+<li>mobilbarát „KRESZ-szerű” UI-t (ez már az)</li>
+<li>témánként külön gyakorlót</li>
+</ul>
+</div>
+<div class="divider"></div>
+<div class="kpi">
+<div class="card">
+<div class="big" id="kpiTopics">–</div>
+<div class="lbl">Téma a bankban</div>
+</div>
+<div class="card">
+<div class="big" id="kpiMC">–</div>
+<div class="lbl">Feleletválasztós</div>
+</div>
+<div class="card">
+<div class="big" id="kpiCalc">–</div>
+<div class="lbl">Számolós</div>
+</div>
+</div>
+</div>
+</div>
+
+      <div class="hr"></div>
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:14px; margin-top:14px;">
+  <div class="card subcard" id="resumeCard" style="display:none;">
+    <div class="subhead">Folytatás</div>
+    <div class="muted" id="resumeInfo">Találtam egy korábbi, elmentett kitöltést ehhez a verzióhoz.</div>
+    <div class="row" style="margin-top:12px; gap:10px; flex-wrap:wrap;">
+      <button class="btn primary" id="resumeBtn" type="button">Folytatom</button>
+      <button class="btn" id="discardBtn" type="button">Mentés törlése</button>
+    </div>
+  </div>
+
+  <div class="card subcard" id="statsCard">
+    <div class="subhead">Statisztika</div>
+    <div class="muted" id="statsSummary">–</div>
+    <div class="row" style="margin-top:12px; gap:10px; flex-wrap:wrap;">
+      <button class="btn" id="resetStatsBtn" type="button">Statisztika törlése</button>
+      <button class="btn" id="exportStatsBtn" type="button">Statisztika export (JSON)</button>
+      <input id="importStatsFile" type="file" accept="application/json" style="max-width:220px;"/>
+      <button class="btn" id="importStatsBtn" type="button">Statisztika import</button>
+    </div>
+  </div>
+
+  <div class="card subcard" id="diagCard">
+    <div class="subhead">Önellenőrzés</div>
+    <div class="muted" id="diagSummary">Ellenőrzés folyamatban…</div>
+    <div class="row" style="margin-top:12px; gap:10px; flex-wrap:wrap;">
+      <button class="btn" id="diagBtn" type="button">Részletek</button>
+      <button class="btn" id="exportDiagBtn" type="button">Hibanapló export</button>
+    </div>
+  </div>
+</div>
+
+</div>
+<!-- QUIZ -->
+<div class="card hidden" id="quiz">
+<div class="row" style="justify-content: space-between;">
+<div class="row">
+<span class="pill"><span id="qIdx">1</span>/<span id="qTotal">1</span></span>
+<span class="pill" id="metaPill"></span>
+<span class="hidden" id="timerPill"></span>
+</div>
+<div class="row">
+<button class="btn" id="bookmarkBtn" title="Megjelölés későbbi gyakorlásra">☆ Mentés</button>
+<button class="btn" id="markBtn" title="Csak az aktuális körben jelöl meg">Megjelöl</button>
+<button class="btn danger" id="quitBtn">Kilépés</button>
+</div>
+</div>
+<div class="progress"><div class="bar" id="progBar"></div></div>
+<div class="divider"></div>
+<div class="qtext" id="qText"></div>
+<div class="qmedia" id="qMedia" style="display:none"></div>
+<div id="opts"></div>
+<div class="divider"></div>
+<div class="row" style="justify-content: space-between;">
+<button class="btn" id="prevBtn">← Előző</button>
+<div class="row">
+<button class="btn" id="checkBtn">Ellenőrzés</button>
+<button class="btn primary" id="nextBtn">Következő →</button>
+<button class="btn good hidden" id="finishBtn">Befejezés</button>
+</div>
+</div>
+<div class="small" id="feedback" style="margin-top:12px;"></div>
+<div class="explainbox hidden" id="explainBox"></div>
+</div>
+<!-- RESULT -->
+<div class="card hidden" id="result">
+<div class="row" style="justify-content: space-between;">
+<div style="font-weight:900; font-size:18px;">Eredmény</div>
+<div class="row">
+<button class="btn" id="downloadBtn">Eredmények letöltése (CSV)</button>
+<button class="btn primary" id="restartBtn">Új teszt</button>
+</div>
+</div>
+<div class="divider"></div>
+<div class="kpi">
+<div class="card">
+<div class="big" id="scoreBig">0%</div>
+<div class="lbl">Találati arány</div>
+</div>
+<div class="card">
+<div class="big" id="pointsBig">0</div>
+<div class="lbl">Pont</div>
+</div>
+<div class="card">
+<div class="big" id="timeBig">–</div>
+<div class="lbl">Idő</div>
+</div>
+<div class="card" id="passCard" style="display:none;">
+<div class="big" id="passBig">–</div>
+<div class="lbl" id="passLbl">Vizsga</div>
+</div>
+</div>
+<div class="divider"></div>
+<div class="card subcard" id="analysisCard">
+  <div class="subhead">Vizsga utáni elemzés</div>
+  <div class="muted small" id="analysisHint">Témánkénti pontosság, leggyengébb kérdések, idő.</div>
+  <div class="row" style="gap:10px; flex-wrap:wrap; margin-top:10px;">
+    <button class="btn" id="weakWorksheetBtn" type="button">Új feladatlap a hibákból/gyengékből</button>
+  </div>
+  <table class="table" id="topicBreakdown"></table>
+  <div class="divider"></div>
+  <div class="small"><b>Top 10 leggyengébb kérdés</b></div>
+  <div id="weakList"></div>
+</div>
+<div class="divider"></div>
+<div class="small">Hibák / részletek:</div>
+<div id="review"></div>
+</div>
+</div>
+<div id="toast" class="toast hidden"><div class="t1" id="toastTitle"></div><div class="t2" id="toastMsg"></div></div>
+<script id="bankData" type="application/json"></script>
+<script>
+(async () => {
+  const el = (id) => document.getElementById(id);
+  const BANK_OVERRIDE_KEY = 'villanyszerelo_interaktiv_teszt_bank_override_v1';
+
+  // v28: toast / timing / spaced repetition helpers
+  function showToast(title, msg){
+    const t = el('toast');
+    if (!t) return;
+    el('toastTitle').textContent = title || '';
+    el('toastMsg').textContent = msg || '';
+    t.classList.remove('hidden');
+    clearTimeout(showToast._to);
+    showToast._to = setTimeout(() => { try{ t.classList.add('hidden'); }catch(e){} }, 3200);
+  }
+
+  function commitTime(){
+    if (!state) return;
+    const now = Date.now();
+    if (!state.qEnterTs) state.qEnterTs = now;
+    const dt = Math.max(0, (now - state.qEnterTs) / 1000);
+    if (!Array.isArray(state.timeByIdx)) state.timeByIdx = new Array(state.picked?.length||0).fill(0);
+    const i = Math.max(0, Math.min(state.idx||0, state.timeByIdx.length-1));
+    state.timeByIdx[i] = (state.timeByIdx[i] || 0) + dt;
+    state.qEnterTs = now;
+  }
+
+  function srInit(){
+    return { interval: 0, ease: 2.3, due: 0 }; // days, ease factor, due ms
+  }
+  function srIsDue(qid){
+    const s = getQStat(qid);
+    const sr = s.sr || srInit();
+    if (!s.seen) return true; // új kérdés is jöhet
+    return !sr.due || sr.due <= Date.now();
+  }
+  function srUpdate(qid, ok){
+    const s = getQStat(qid);
+    if (!s.sr) s.sr = srInit();
+    const sr = s.sr;
+    if (ok){
+      if (sr.interval <= 0) sr.interval = 1;
+      else if (sr.interval === 1) sr.interval = 3;
+      else sr.interval = Math.min(180, Math.round(sr.interval * sr.ease));
+      sr.ease = Math.min(2.8, (sr.ease || 2.3) + 0.1);
+    } else {
+      sr.interval = 1;
+      sr.ease = Math.max(1.3, (sr.ease || 2.3) - 0.2);
+    }
+    sr.due = Date.now() + sr.interval * 86400000;
+    s.sr = sr;
+  }
+
+  function pickTopicQuota(pool, n, ensureMin1, doShuffle){
+    // pool already filtered; returns up to n questions, distributed by topic proportions
+    const byTopic = new Map();
+    for (const q of pool){
+      const t = q.topic || 'Egyéb';
+      if (!byTopic.has(t)) byTopic.set(t, []);
+      byTopic.get(t).push(q);
+    }
+    const topics = Array.from(byTopic.keys());
+    if (!topics.length) return [];
+    // optional shuffle inside topic
+    if (doShuffle){
+      for (const t of topics) shuffle(byTopic.get(t));
+    }
+
+    const total = pool.length;
+    const desired = new Map();
+    let sum = 0;
+    for (const t of topics){
+      const cnt = byTopic.get(t).length;
+      let d = Math.round(n * (cnt / total));
+      desired.set(t, d);
+      sum += d;
+    }
+    // normalize to sum exactly n
+    const clamp = (t) => Math.min(desired.get(t), byTopic.get(t).length);
+    // fix rounding drift
+    while (sum > n){
+      // subtract from largest desired
+      let bestT = topics[0], bestV = -1;
+      for (const t of topics){
+        const v = desired.get(t);
+        if (v > bestV) { bestV = v; bestT = t; }
+      }
+      if (desired.get(bestT) > 0){ desired.set(bestT, desired.get(bestT)-1); sum--; }
+      else break;
+    }
+    while (sum < n){
+      // add to topics that still have capacity
+      let added = false;
+      for (const t of topics){
+        if (desired.get(t) < byTopic.get(t).length){
+          desired.set(t, desired.get(t)+1); sum++; added = true;
+          if (sum >= n) break;
+        }
+      }
+      if (!added) break;
+    }
+
+    if (ensureMin1 && n >= topics.length){
+      for (const t of topics){
+        if (desired.get(t) === 0 && byTopic.get(t).length){
+          desired.set(t, 1); sum++;
+        }
+      }
+      // if we overshot, trim back from largest
+      while (sum > n){
+        let bestT = topics[0], bestV = -1;
+        for (const t of topics){
+          const v = desired.get(t);
+          if (v > bestV) { bestV = v; bestT = t; }
+        }
+        if (desired.get(bestT) > 1){ desired.set(bestT, desired.get(bestT)-1); sum--; }
+        else break;
+      }
+    }
+
+    const out = [];
+    for (const t of topics){
+      const take = Math.min(desired.get(t) || 0, byTopic.get(t).length);
+      out.push(...byTopic.get(t).slice(0, take));
+    }
+    if (doShuffle) shuffle(out);
+    return out.slice(0, n);
+  }
+
+
+  function setBankStatus(html){
+    const s = el('bankStatus');
+    if (s) s.innerHTML = html || '';
+  }
+
+  async function loadBank(){
+    // 1) local override (offline-friendly)
+    try {
+      const raw = (localStorage.getItem(BANK_OVERRIDE_KEY) || '').trim();
+      if (raw){
+        const obj = JSON.parse(raw);
+        setBankStatus('✅ Kérdésbank: helyi mentésből betöltve (override).');
+        return obj;
+      }
+    } catch(e){
+      // ignore
+    }
+
+    // 2) fetch questions.json (works when served via local server)
+    try {
+      const r = await fetch('questions.json', { cache: 'no-store' });
+      if (r.ok){
+        const obj = await r.json();
+        setBankStatus('✅ Kérdésbank: questions.json betöltve.');
+        return obj;
+      }
+    } catch(e){
+      // ignore
+    }
+
+    // 3) manual file load
+    setBankStatus('⚠️ Nem sikerült automatikusan betölteni. Válaszd ki a <b>questions.json</b> fájlt kézzel.');
+    const fileInput = el('bankFile');
+    const reloadBtn = el('reloadBankBtn');
+    if (reloadBtn){
+      reloadBtn.addEventListener('click', () => {
+        try { localStorage.removeItem(BANK_OVERRIDE_KEY); } catch(e){}
+        location.reload();
+      });
+    }
+    if (!fileInput){
+      throw new Error('bankFile input missing');
+    }
+    return await new Promise((resolve, reject) => {
+      fileInput.addEventListener('change', () => {
+        const f = fileInput.files && fileInput.files[0];
+        if (!f) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const txt = String(reader.result || '');
+            const obj = JSON.parse(txt);
+            try { localStorage.setItem(BANK_OVERRIDE_KEY, JSON.stringify(obj)); } catch(e){}
+            setBankStatus('✅ Betöltve és elmentve. Frissítem…');
+            setTimeout(() => location.reload(), 250);
+            resolve(obj);
+          } catch(e){
+            alert('Nem sikerült beolvasni a JSON-t. Ellenőrizd, hogy jó fájlt választottál.');
+            reject(e);
+          }
+        };
+        reader.onerror = () => reject(reader.error);
+        reader.readAsText(f, 'utf-8');
+      }, { once: true });
+    });
+  }
+
+  const BANK = await loadBank();
+
+// --- Compatibility: allow older/newer bank schemas ---
+// Some generators store correct answers under `answer` instead of `correct`.
+for (const q of (BANK.questions || [])) {
+  if (q.correct == null && q.answer != null) q.correct = q.answer;
+  if (typeof q.correct === "number") q.correct = [q.correct];
+  if (Array.isArray(q.correct)) q.correct = q.correct.map(x => typeof x === "string" ? parseInt(x, 10) : x);
+}
+
+const setup = el('setup'), quiz = el('quiz'), result = el('result');
+
+// Setup UI
+el('allCount').textContent = BANK.count;
+el('genAt').textContent = BANK.generated_at.replace('T',' ');
+el('kpiTopics').textContent = BANK.topics.length;
+el('kpiMC').textContent = BANK.questions.filter(q => q.type === 'feleletválasztós').length;
+el('kpiCalc').textContent = BANK.questions.filter(q => q.type !== 'feleletválasztós').length;
+
+const topicSel = el('topicSel');
+BANK.topics.forEach(t => {
+  const opt = document.createElement('option');
+  opt.value = t; opt.textContent = t;
+  topicSel.appendChild(opt);
+});
+
+function selectedTopics() {
+  return Array.from(topicSel.selectedOptions).map(o => o.value);
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function fmtTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+
+let state = null;
+
+// --- v20: persistence + diagnostics ---
+const LS_KEY = 'villanyszerelo_interaktiv_teszt_state_v20';
+const BANK_FP = String((BANK.generated_at || '') + '|' + (BANK.count || (BANK.questions ? BANK.questions.length : 0)));
+
+function safeLSGet(key){
+  try { return localStorage.getItem(key); } catch(e){ return null; }
+}
+function safeLSSet(key, val){
+  try { localStorage.setItem(key, val); return true; } catch(e){ return false; }
+}
+function safeLSRemove(key){
+  try { localStorage.removeItem(key); return true; } catch(e){ return false; }
+}
+
+// --- v26: stats + bookmarks (localStorage) ---
+const STATS_KEY = 'villanyszerelo_interaktiv_teszt_stats_v1';
+
+function loadStats(){
+  const raw = safeLSGet(STATS_KEY);
+  if (!raw) return { _v2:true, created_at: Date.now(), questions:{}, history:[] };
+  try {
+    const obj = JSON.parse(raw);
+    if (!obj || typeof obj !== 'object') throw new Error('bad stats');
+    if (!obj.questions) obj.questions = {};
+    if (!obj.history) obj.history = [];
+    obj._v2 = true;
+    return obj;
+  } catch(e){
+    return { _v2:true, created_at: Date.now(), questions:{}, history:[] };
+  }
+}
+function saveStats(){
+  safeLSSet(STATS_KEY, JSON.stringify(STATS));
+}
+function getQStat(qid){
+  if (!STATS.questions[qid]) STATS.questions[qid] = { seen:0, correct:0, wrong:0, bookmarked:false, last:0, timeSec:0, sr: srInit() };
+  // backfill for older saved stats
+  const s = STATS.questions[qid];
+  if (typeof s.timeSec !== 'number') s.timeSec = 0;
+  if (!s.sr) s.sr = srInit();
+  if (typeof s.last !== 'number') s.last = 0;
+  return STATS.questions[qid];
+}
+function isBookmarked(qid){
+  return !!getQStat(qid).bookmarked;
+}
+function toggleBookmark(qid){
+  const s = getQStat(qid);
+  s.bookmarked = !s.bookmarked;
+  s.last = Date.now();
+  saveStats();
+  renderStatsSummary();
+}
+function recordAnswer(qid, ok, timeSec=0){
+  const s = getQStat(qid);
+  s.seen += 1;
+  if (ok) s.correct += 1;
+  else s.wrong += 1;
+  s.last = Date.now();
+  if (typeof timeSec === 'number' && timeSec > 0) s.timeSec = (s.timeSec || 0) + timeSec;
+  try { srUpdate(qid, ok); } catch(e){}
+}
+function accuracy(qid){
+  const s = getQStat(qid);
+  return s.seen ? (s.correct / s.seen) : null;
+}
+function exportJson(filename, obj){
+  const blob = new Blob([JSON.stringify(obj, null, 2)], {type:'application/json;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+function renderStatsSummary(){
+  const elSum = el('statsSummary');
+  if (!elSum) return;
+  const qStats = STATS.questions || {};
+  const ids = Object.keys(qStats);
+  let seenAny = 0, wrongAny = 0, bookmarked = 0, totalSeen = 0, totalCorrect = 0;
+  for (const id of ids){
+    const s = qStats[id];
+    if ((s.seen||0)>0) seenAny += 1;
+    if ((s.wrong||0)>0) wrongAny += 1;
+    if (s.bookmarked) bookmarked += 1;
+    totalSeen += (s.seen||0);
+    totalCorrect += (s.correct||0);
+  }
+  const acc = totalSeen ? Math.round(100 * totalCorrect / totalSeen) : 0;
+  elSum.textContent = `Megnyitott kérdések: ${seenAny}/${(BANK.questions||[]).length} • Hibás legalább egyszer: ${wrongAny} • Megjelöltek ★: ${bookmarked} • Össz pontosság: ${acc}%`;
+}
+
+let STATS = loadStats();
+let LAST_WRONG_IDS = [];
+
+
+function resetToSetup(message){
+  // Clear saved progress and return to the start screen
+  try{ safeLSRemove(LS_KEY); }catch(e){}
+  try{
+    if (state && state.timerInt){ clearInterval(state.timerInt); state.timerInt = null; }
+  }catch(e){}
+  try{
+    if (state){
+      state.picked = [];
+      state.idx = 0;
+      state.marked = new Set();
+      state.ans = {};
+      state.finished = false;
+    }
+  }catch(e){}
+  const setup = el('setup');
+  const quiz = el('quiz');
+  const results = el('results');
+  if (quiz) quiz.classList.add('hidden');
+  if (results) results.classList.add('hidden');
+  if (setup) setup.classList.remove('hidden');
+
+  const pill = el('timerPill');
+  if (pill){ pill.classList.add('hidden'); pill.textContent = '⏱'; }
+
+  const note = el('setupNotice');
+  if (note){
+    if (message){
+      note.textContent = message;
+      note.style.display = 'block';
+    } else {
+      note.textContent = '';
+      note.style.display = 'none';
+    }
+  }
+}
+window.addEventListener('error', (ev) => {
+  try{
+    console.error(ev?.error || ev?.message || ev);
+    // If we crashed while resuming, fall back to setup instead of a blank screen.
+    if (el('setup') && el('setup').classList.contains('hidden')){
+      resetToSetup('Hiba történt a betöltéskor. A mentett állapotot töröltem — indíts új tesztet.');
+    }
+  }catch(e){}
+});
+
+
+
+function clearProgress(){
+  try { safeLSRemove(LS_KEY); } catch(e){}
+}
+
+function saveProgress(reason='auto'){
+  if (!state) return;
+  const payload = {
+    v: 26,
+    fingerprint: BANK_FP,
+    saved_at: Date.now(),
+    reason,
+    pickedIds: (state.picked || []).map(q => q.id),
+    idx: Number.isFinite(state.idx) ? state.idx : 0,
+    answers: Array.isArray(state.answers) ? state.answers : [],
+    marked: state.marked ? Array.from(state.marked) : [],
+    startedAt: state.startedAt || Date.now(),
+    timerMin: state.timerMin || 0,
+    endAt: state.endAt || null, // abs ms timestamp, or null
+    examMode: !!state.examMode,
+    learnMode: !!state.learnMode,
+    requireCheck: !!state.requireCheck,
+    checked: Array.isArray(state.checked) ? state.checked : [],
+    passPct: Number.isFinite(state.passPct) ? state.passPct : 70,
+    showMeta: !!state.showMeta
+  };
+  safeLSSet(LS_KEY, JSON.stringify(payload));
+}
+
+function loadProgress(){
+  const raw = safeLSGet(LS_KEY);
+  if (!raw) return null;
+  try {
+    const p = JSON.parse(raw);
+    if (!p || p.fingerprint !== BANK_FP || !Array.isArray(p.pickedIds)) return null;
+    // Basic sanity
+    if (!Array.isArray(p.answers)) p.answers = [];
+    if (!Array.isArray(p.marked)) p.marked = [];
+    if (!Number.isFinite(p.idx)) p.idx = 0;
+    return p;
+  } catch(e){ return null; }
+}
+
+function resumeFromProgress(p){
+  const byId = new Map((BANK.questions||[]).map(q => [q.id, q]));
+  const picked = p.pickedIds.map(id => byId.get(id)).filter(Boolean);
+  if (!picked.length) return false;
+
+  const answers = Array.isArray(p.answers) ? p.answers.slice(0, picked.length) : [];
+  while (answers.length < picked.length) answers.push(null);
+
+  state = {
+    picked,
+    idx: Math.max(0, Math.min(p.idx || 0, picked.length - 1)),
+    answers,
+    marked: new Set(Array.isArray(p.marked) ? p.marked : []),
+    startedAt: p.startedAt || Date.now(),
+    timerMin: p.timerMin || 0,
+    endAt: p.endAt || null,
+    examMode: !!p.examMode,
+    learnMode: !!p.learnMode,
+    requireCheck: !!p.requireCheck,
+    checked: Array.isArray(p.checked) ? p.checked : new Array(picked.length).fill(false),
+    passPct: Number.isFinite(p.passPct) ? p.passPct : 70,
+    showMeta: !!p.showMeta,
+    timerInt: null,
+    elapsedSec: 0
+  };
+
+  // UI toggle
+  setup.classList.add('hidden');
+  result.classList.add('hidden');
+  quiz.classList.remove('hidden');
+  el('qTotal').textContent = picked.length;
+
+  // Restart timer (if any)
+  if (state.timerMin > 0) {
+    el('timerPill').classList.remove('hidden');
+    // If endAt missing (older save), create one from remaining time guess
+    if (!state.endAt) state.endAt = Date.now() + state.timerMin * 60 * 1000;
+    if (state.timerInt) { clearInterval(state.timerInt); state.timerInt = null; }
+    state.timerInt = setInterval(() => {
+      const left = Math.max(0, Math.floor((state.endAt - Date.now())/1000));
+      el('timerPill').textContent = '⏱ ' + fmtTime(left);
+      if (left <= 0) {
+        clearInterval(state.timerInt);
+        state.timerInt = null;
+        finishQuiz(true);
+      }
+    }, 250);
+  } else {
+    el('timerPill').classList.add('hidden');
+    el('timerPill').textContent = '⏱';
+  }
+
+  saveProgress('resume');
+  render();
+  return true;
+}
+
+function computeDiagnostics(){
+  const issues = [];
+  const qs = BANK.questions || [];
+  for (const q of qs){
+    const id = q.id;
+    const qtxt = (q.question || '').trim();
+    if (!qtxt) issues.push({id, sev:'bad', code:'MISSING_QUESTION', msg:'Hiányzik a kérdésszöveg.'});
+    const opts = Array.isArray(q.options) ? q.options : [];
+    if (opts.length < 2) issues.push({id, sev:'bad', code:'MISSING_OPTIONS', msg:'Nincs elég válaszlehetőség (min. 2 kell).'});
+    const corr = Array.isArray(q.correct) ? q.correct : (Array.isArray(q.answer) ? q.answer : []);
+    if (!corr.length) issues.push({id, sev:'warn', code:'MISSING_CORRECT', msg:'Nincs megadva helyes válasz (correct/answer).'});
+    if (opts.length){
+      for (const c of corr){
+        if (typeof c !== 'number' || c < 0 || c >= opts.length){
+          issues.push({id, sev:'bad', code:'BAD_CORRECT_INDEX', msg:`Hibás helyes index: ${c} (opciók száma: ${opts.length}).`});
+        }
+      }
+    }
+    const expectsImg = /képen|ábra|rajz|fotó|lásd/i.test(qtxt);
+    if (expectsImg && !q.image) issues.push({id, sev:'warn', code:'MISSING_IMAGE', msg:'A kérdés képre hivatkozik, de nincs kép mező.'});
+    if (q.image && typeof q.image === 'string' && q.image.startsWith('data:image') === false){
+      issues.push({id, sev:'warn', code:'IMAGE_NOT_DATAURI', msg:'A kép nem data URI (offline módban problémás lehet).'});
+    }
+  }
+  // duplicates
+  const seen = new Set();
+  for (const q of qs){
+    if (seen.has(q.id)) issues.push({id:q.id, sev:'warn', code:'DUPLICATE_ID', msg:'Duplikált kérdés-azonosító.'});
+    seen.add(q.id);
+  }
+  return issues;
+}
+
+const DIAG_ISSUES = computeDiagnostics();
+
+function renderDiagSummary(){
+  const elSum = el('diagSummary');
+  if (!elSum) return;
+  const bad = DIAG_ISSUES.filter(x => x.sev==='bad').length;
+  const warn = DIAG_ISSUES.filter(x => x.sev==='warn').length;
+  if (!DIAG_ISSUES.length){
+    elSum.textContent = 'Nem találtam problémát a kérdésbankban.';
+  } else {
+    elSum.textContent = `Találtam ${DIAG_ISSUES.length} jelzést: ${bad} kritikus, ${warn} figyelmeztetés.`;
+  }
+}
+
+function openDiag(){
+  const modal = el('diagModal');
+  modal.setAttribute('aria-hidden','false');
+  const bad = DIAG_ISSUES.filter(x => x.sev==='bad').length;
+  const warn = DIAG_ISSUES.filter(x => x.sev==='warn').length;
+  el('diagSub').textContent = `Összesen: ${DIAG_ISSUES.length} • Kritikus: ${bad} • Figyelmeztetés: ${warn}`;
+  const list = el('diagList');
+  list.innerHTML = '';
+  const max = 250;
+  const shown = DIAG_ISSUES.slice(0, max);
+  for (const it of shown){
+    const div = document.createElement('div');
+    div.className = 'diag-item';
+    const tagClass = it.sev==='bad' ? 'bad' : 'warn';
+    div.innerHTML = `<div class="t">Kérdés #${escapeHtml(it.id)} <span class="diag-tag ${tagClass}">${it.code}</span></div>` +
+                    `<div class="m">${escapeHtml(it.msg)}</div>`;
+    list.appendChild(div);
+  }
+  if (DIAG_ISSUES.length > max){
+    const more = document.createElement('div');
+    more.className = 'muted';
+    more.style.marginTop = '8px';
+    more.textContent = `… és még ${DIAG_ISSUES.length - max} további. (Exporttal a teljes lista letölthető.)`;
+    list.appendChild(more);
+  }
+}
+
+function closeDiag(){
+  const modal = el('diagModal');
+  modal.setAttribute('aria-hidden','true');
+}
+
+function exportDiagnostics(){
+  const payload = {
+    v: 21,
+    fingerprint: BANK_FP,
+    generated_at: Date.now(),
+    issues: DIAG_ISSUES
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'villanyszerelo_diagnosztika_v21.json';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 300);
+}
+
+function updateResumeCard(){
+  const p = loadProgress();
+  const card = el('resumeCard');
+  if (!card) return;
+  if (!p){
+    card.style.display = 'none';
+    return;
+  }
+  const when = new Date(p.saved_at || Date.now());
+  const info = el('resumeInfo');
+  const answered = p.answers ? Object.keys(p.answers).length : 0;
+  info.textContent = `Elmentett állapot: ${when.toLocaleString('hu-HU')} • megválaszolva: ${answered} • pozíció: ${Math.min((p.idx||0)+1, p.pickedIds.length)}/${p.pickedIds.length}`;
+  card.style.display = '';
+}
+
+
+function startQuiz(nOverride=null) {
+  const n = nOverride ?? Math.max(5, parseInt(el('numQ').value || '20', 10));
+  const timerMin = Math.max(0, parseInt(el('timerMin').value || '0', 10));
+  const doShuffle = el('shuffle').checked;
+  const examMode = el('examMode').checked;
+  let learnMode = !!(el('learnMode') && el('learnMode').checked);
+  let requireCheck = !!(el('requireCheck') && el('requireCheck').checked);
+  if (examMode) { learnMode = false; requireCheck = false; }
+  if (!learnMode) requireCheck = false;
+  const passPct = Math.max(0, Math.min(100, parseInt((el('passPct') ? el('passPct').value : '70') || '70', 10)));
+  const showMeta = el('showMeta').checked;
+  const noBack = !!el('noBack')?.checked;
+  const topics = selectedTopics();
+
+  let pool = BANK.questions.slice();
+  if (topics.length) pool = pool.filter(q => topics.includes(q.topic));
+
+  // Source filter (stats-based)
+  const source = (el('sourceFilter') ? el('sourceFilter').value : 'all') || 'all';
+  if (source === 'wrong') {
+    pool = pool.filter(q => (getQStat(q.id).wrong || 0) > 0);
+  } else if (source === 'weak') {
+    pool = pool.filter(q => {
+      const s = getQStat(q.id);
+      if (!s.seen) return false;
+      const acc = s.correct / s.seen;
+      return s.seen >= 3 && acc <= 0.60;
+    });
+  } else if (source === 'new') {
+    pool = pool.filter(q => (getQStat(q.id).seen || 0) === 0);
+  } else if (source === 'bookmarked') {
+    pool = pool.filter(q => !!getQStat(q.id).bookmarked);
+  } else if (source === 'due') {
+    pool = pool.filter(q => srIsDue(q.id));
+  }
+
+  // Text search filter
+  const term = (el('searchText') ? el('searchText').value : '').trim().toLowerCase();
+  if (term) {
+    const tokens = term.split(/\s+/).filter(Boolean);
+    pool = pool.filter(q => {
+      const hay = `${q.id} ${q.topic||''} ${q.page||''} ${q.question||''} ${(q.options||[]).join(' ')} ${q.explanation||''}`.toLowerCase();
+      return tokens.every(t => hay.includes(t));
+    });
+  }
+
+  // Advanced filters
+  const imgOnly = !!el('imgOnly')?.checked;
+  if (imgOnly) pool = pool.filter(q => !!(q.has_image || q.image));
+
+  const ptsMinRaw = (el('ptsMin') ? String(el('ptsMin').value || '').trim() : '');
+  const ptsMaxRaw = (el('ptsMax') ? String(el('ptsMax').value || '').trim() : '');
+  const ptsMin = ptsMinRaw ? parseInt(ptsMinRaw,10) : null;
+  const ptsMax = ptsMaxRaw ? parseInt(ptsMaxRaw,10) : null;
+  if (ptsMin !== null && !Number.isNaN(ptsMin)) pool = pool.filter(q => Number(q.points||1) >= ptsMin);
+  if (ptsMax !== null && !Number.isNaN(ptsMax)) pool = pool.filter(q => Number(q.points||1) <= ptsMax);
+
+  const useQuota = !!el('topicQuota')?.checked;
+  const ensureMin1 = !!el('min1Topic')?.checked;
+  let picked;
+  if (useQuota) {
+    // topic-proportional selection
+    const tmp = doShuffle ? pool.slice() : pool.slice();
+    if (!doShuffle) {
+      // preserve original order within topic
+    }
+    picked = pickTopicQuota(tmp, Math.min(n, pool.length), ensureMin1, doShuffle);
+  } else {
+    if (doShuffle) shuffle(pool);
+    picked = pool.slice(0, Math.min(n, pool.length));
+  }
+state = {
+    picked,
+    idx: 0,
+    answers: new Array(picked.length).fill(null), // array of index/indices
+    marked: new Set(),
+    noBack,
+    maxReached: 0,
+    timeByIdx: new Array(picked.length).fill(0),
+    qEnterTs: Date.now(),
+    startedAt: Date.now(),
+    timerMin,
+    examMode,
+    learnMode,
+    requireCheck,
+    checked: new Array(picked.length).fill(false),
+    passPct,
+    showMeta,
+    timerInt: null,
+    elapsedSec: 0
+  };
+
+  setup.classList.add('hidden');
+  result.classList.add('hidden');
+  quiz.classList.remove('hidden');
+
+  el('qTotal').textContent = picked.length;
+
+  // timer
+  if (timerMin > 0) {
+    el('timerPill').classList.remove('hidden');
+    state.endAt = Date.now() + timerMin * 60 * 1000;
+    const totalSec = Math.max(1, timerMin * 60);
+    state.warned = {};
+    const warnThresholds = [];
+    // remaining seconds thresholds
+    if (totalSec >= 20*60) warnThresholds.push(10*60);
+    if (totalSec >= 10*60) warnThresholds.push(5*60);
+    warnThresholds.push(60);
+    warnThresholds.push(Math.floor(totalSec/2));
+    state.timerInt = setInterval(() => {
+      const left = Math.max(0, Math.floor((state.endAt - Date.now())/1000));
+      el('timerPill').textContent = '⏱ ' + fmtTime(left);
+      // warnings (once)
+      const leftSec = Math.max(0, Math.ceil(left));
+      for (const th of warnThresholds){
+        if (!th || th <= 0) continue;
+        if (leftSec <= th && !state.warned[th]){
+          state.warned[th] = true;
+          if (th >= 60) showToast('⏱ Idő figyelmeztetés', `Hátralévő idő: ${fmtTime(leftSec)}.`);
+        }
+      }
+      if (left <= 0) {
+        clearInterval(state.timerInt);
+        state.timerInt = null;
+        finishQuiz(true);
+      }
+    }, 250);
+  } else {
+    state.endAt = null;
+    el('timerPill').classList.add('hidden');
+    el('timerPill').textContent = '⏱';
+  }
+
+  render();
+}
+
+function setFeedback(text, kind='') {
+  const fb = el('feedback');
+  fb.textContent = text || '';
+  fb.style.color = kind==='ok' ? 'var(--accent2)' : (kind==='bad' ? 'var(--danger)' : 'var(--muted)');
+}
+
+
+function setExplain(html, show=true){
+  const box = el('explainBox');
+  if (!box) return;
+  box.innerHTML = html || '';
+  box.classList.toggle('hidden', !show || !html);
+}
+
+function esc(s){ return String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+function topicHint(topic){
+  const t = String(topic||'').toLowerCase();
+  // General, safe reminders (not a substitute for your notes)
+  if (t.includes('ip védettség')) return 'Az <b>IPXY</b> jelölésnél az <b>első szám</b> a szilárd testek/por elleni, a <b>második</b> a víz elleni védelmet jelzi. Minél nagyobb a szám, annál nagyobb a védelem.';
+  if (t.includes('ávk') || t.includes('érintésvédelem') || t.includes('fi')) return 'Az <b>ÁVK (FI-relé/RCD)</b> a fázis és a nullán folyó áram különbségét figyeli (hibaáram). Tanuló tipp: jegyezd meg a tipikus névleges hibaáram értékeket és a <b>TEST</b> gomb szerepét.';
+  if (t.includes('hurokimpedancia')) return 'A <b>hurokimpedancia (Zs)</b> a hibaáram-kör “ellenállását” jellemzi. Általános elv: kisebb Zs → nagyobb hibaáram → gyorsabb védelmi lekapcsolás.';
+  if (t.includes('feszültségesés')) return 'A <b>feszültségesés</b> nő a terhelőárammal és a vezetékhosszal, és csökken nagyobb keresztmetszettel. Tanuló tipp: mindig figyelj az egységekre (A, m, Ω, V).';
+  if (t.includes('túláram') || t.includes('biztosít')) return 'A <b>túláramvédelem</b> túlterhelés és zárlat ellen véd. Tanuló tipp: nézd meg, mit jelent a névleges áram és a karakterisztika (pl. B/C/D).';
+  if (t.includes('túlfeszültség')) return 'A <b>túlfeszültség-védelem (SPD)</b> a villám/kapcsolási túlfeszültségek ellen szolgál. Tanuló tipp: tudd, mire való a T1/T2/T3 fokozat, és miért fontos a jó földelés.';
+  if (t.includes('szigetel')) return 'A <b>szigetelési ellenállás</b> mérése előtt a berendezést feszültségmentesíteni kell. Tanuló tipp: tudd, mit mérünk (mely vezetők között), és milyen körülmények befolyásolják az eredményt (nedvesség, sérülés).';
+  if (t.includes('pen')) return 'A <b>PEN</b> vezető a védő- és nullavezető kombinációja (TN-C szakasz). Tanuló tipp: a PEN megszakítása veszélyes lehet; a szétválasztás után <b>PE és N</b> külön fut.';
+  if (t.includes('motor')) return 'Motoros feladatoknál tanuló tipp: gondold végig a tekercskivezetéseket, a csillag/delta kapcsolás célját (pl. indítóáram csökkentés), és hogy a névleges feszültségek hogyan kapcsolódnak.';
+  if (t.includes('transzform')) return 'Transzformátornál tanuló tipp: feszültség- és menetszám-arány, az áram “fordítottan” aránylik, a teljesítmény pedig közel azonos (veszteségekkel).';
+  if (t.includes('napelem') || t.includes('pv')) return 'PV rendszereknél tanuló tipp: külön kezeld a DC és AC oldalt, figyelj a polaritásra, leválasztásra és a túlfeszültség-védelem szerepére.';
+  if (t.includes('vezérlés')) return 'Vezérlésnél tanuló tipp: rajzolj “áramutat” fejben – mi táplál, mi működtet, mi tartja önmagát. Segédérintkezők (NO/NC) logikáját külön gyakorold.';
+  return '';
+}
+
+function clearReviewUI(){
+  const wrap = el('opts');
+  if (wrap){
+    for (const lab of wrap.querySelectorAll('.opt')){
+      lab.classList.remove('correct','wrong','chosen');
+    }
+  }
+  setExplain('', false);
+}
+
+function renderReviewForCurrent(){
+  if (!state || state.examMode) return;
+  const q = state.picked[state.idx];
+  const a = state.answers[state.idx];
+  if (a === null) return;
+  const correct = q.correct || [];
+  const isMulti = (correct && correct.length > 1);
+
+  let ok=false;
+  if (!isMulti) ok = (a === correct[0]);
+  else ok = Array.isArray(a) && arraysEqualAsSet(a, correct);
+
+  // Highlight options (Tanuló mód)
+  const wrap = el('opts');
+  if (wrap){
+    const labels = Array.from(wrap.querySelectorAll('.opt'));
+    labels.forEach((lab, i) => {
+      const picked = isMulti ? (Array.isArray(a) && a.includes(i)) : (a === i);
+      if (picked) lab.classList.add('chosen');
+      if (correct.includes(i)) lab.classList.add('correct');
+      if (picked && !correct.includes(i)) lab.classList.add('wrong');
+    });
+  }
+
+  // Build explanation
+  const corrText = (correct || []).map(i => q.options[i]).join(' | ');
+  const baseExplain = (q.explanation || '').trim();
+  const hint = topicHint(q.topic);
+
+  let html = `<div class="title">Kifejtés</div>`;
+  html += `<div><b>Helyes válasz:</b> ${esc(corrText || '—')}</div>`;
+  if (baseExplain){
+    html += `<div style="margin-top:8px; white-space:pre-wrap;">${esc(baseExplain)}</div>`;
+  } else {
+    html += `<div class="hint">Ehhez a kérdéshez még nincs egyedi magyarázat. Ha szeretnéd, az <b>editor.html</b>-ben hozzá tudsz adni “Magyarázat” mezőt.</div>`;
+  }
+  if (hint){
+    html += `<div class="hint" style="margin-top:10px;"><b>Tanuló tipp (általános):</b> ${hint}</div>`;
+  }
+  html += `<div class="hint" style="margin-top:10px;">${ok ? '✅ Jó úton vagy. Írd le magadnak 1 mondatban, <i>miért</i> ez a helyes!' : '❌ Itt érdemes visszanézni a jegyzetet és megfogalmazni a szabályt.'}</div>`;
+  setExplain(html, true);
+}
+
+function render(){
+  if (!state || !Array.isArray(state.picked) || state.picked.length === 0){
+    resetToSetup('A mentett teszt nem tölthető be. Indíts új tesztet.');
+    return;
+  }
+  // Clamp index in case the question bank changed
+  state.idx = Math.max(0, Math.min(state.idx||0, state.picked.length-1));
+  const q = state.picked[state.idx];
+  if (!q){
+    resetToSetup('A mentett teszt hibás (hiányzó kérdés). Indíts új tesztet.');
+    return;
+  }
+  el('qIdx').textContent = (state.idx + 1);
+  state.maxReached = Math.max(state.maxReached || 0, state.idx);
+  const pct = ((state.idx) / Math.max(1, state.picked.length-1)) * 100;
+  el('progBar').style.width = `${pct}%`;
+
+  const metaParts = [];
+  if (state.showMeta) {
+    if (q.topic) metaParts.push(q.topic);
+    if (q.page) metaParts.push('oldal: ' + q.page);
+    if (q.points) metaParts.push('pont: ' + q.points);
+  }
+  el('metaPill').textContent = metaParts.length ? metaParts.join(' • ') : '—';
+
+  const qTextRaw = String(q.question ?? q.prompt ?? q.stem ?? q.text ?? '');
+  el('qText').textContent = qTextRaw.trim() ? qTextRaw : '';
+
+  // v28: start timing for this question
+  state.qEnterTs = Date.now();
+
+  // optional image / diagram
+  const qMedia = el('qMedia');
+  if (qMedia){
+    if (q.image){
+      const alt = q.image_alt || "Ábra";
+      qMedia.innerHTML = `<img src="${q.image}" alt="${alt}">`;
+      qMedia.style.display = "block";
+    } else {
+      qMedia.innerHTML = "";
+      qMedia.style.display = "none";
+    }
+  }
+
+
+
+  const optsWrap = el('opts');
+  optsWrap.innerHTML = '';
+  clearReviewUI();
+
+  const isMulti = (q.correct && q.correct.length > 1);
+  const inputType = isMulti ? 'checkbox' : 'radio';
+
+  // Build options
+  q.options.forEach((optText, i) => {
+    const label = document.createElement('label');
+    label.className = 'opt';
+    const input = document.createElement('input');
+    input.type = inputType;
+    input.name = 'opt';
+    input.value = String(i);
+
+    const stored = state.answers[state.idx];
+    if (stored !== null) {
+      if (Array.isArray(stored)) input.checked = stored.includes(i);
+      else input.checked = stored === i;
+    }
+
+    input.addEventListener('change', () => {
+      if (!isMulti) {
+        state.answers[state.idx] = i;
+      } else {
+        const cur = Array.isArray(state.answers[state.idx]) ? state.answers[state.idx].slice() : [];
+        if (input.checked) {
+          if (!cur.includes(i)) cur.push(i);
+        } else {
+          const k = cur.indexOf(i);
+          if (k >= 0) cur.splice(k, 1);
+        }
+        state.answers[state.idx] = cur;
+      }
+      if (state.learnMode && Array.isArray(state.checked)) { state.checked[state.idx] = false; clearReviewUI(); }
+      if (!state.examMode) {
+        if (state.learnMode) setFeedback('Válasz rögzítve. Nyomj Ellenőrzést.', '');
+        else setFeedback('Válasz elmentve.', '');
+      }
+      updateButtons();
+    saveProgress('answer');
+    });
+
+    const span = document.createElement('div');
+    span.style.flex = '1';
+    span.textContent = optText;
+
+    label.appendChild(input);
+    label.appendChild(span);
+    optsWrap.appendChild(label);
+  });
+
+  // Controls
+  el('prevBtn').disabled = (state.idx === 0) || !!state.noBack;
+  el('prevBtn').classList.toggle('hidden', !!state.noBack);
+  el('nextBtn').classList.toggle('hidden', state.idx === state.picked.length - 1);
+  el('finishBtn').classList.toggle('hidden', state.idx !== state.picked.length - 1);
+
+  // Bookmark (persistent)
+  const qid = q.id;
+  const bm = isBookmarked(qid);
+  const bb = el('bookmarkBtn');
+  if (bb){
+    bb.textContent = bm ? '★ Mentve' : '☆ Mentés';
+    bb.classList.toggle('good', bm);
+  }
+
+  // Mark button
+  el('markBtn').textContent = state.marked.has(state.idx) ? 'Megjelölve ✓' : 'Megjelöl';
+  el('markBtn').classList.toggle('good', state.marked.has(state.idx));
+
+  // Check button
+  el('checkBtn').classList.toggle('hidden', state.examMode);
+
+
+  // Tanuló mód: ha korábban ellenőrizted, rajzoljuk vissza a kiemelést és kifejtést
+  const restoredChecked = (state.learnMode && !state.examMode && Array.isArray(state.checked) && state.checked[state.idx]);
+  if (restoredChecked) {
+    renderReviewForCurrent();
+    // Visszaállított visszajelzés
+    const correct = q.correct || [];
+    const a = state.answers[state.idx];
+    const isMulti = (correct && correct.length > 1);
+    let ok = false;
+    if (a !== null) {
+      if (!isMulti) ok = (a === correct[0]);
+      else ok = Array.isArray(a) && arraysEqualAsSet(a, correct);
+    }
+    if (ok) {
+      setFeedback('Helyes ✅', 'ok');
+    } else {
+      const corrText = (correct || []).map(i => q.options[i]).join(' | ');
+      setFeedback('Helytelen ❌  Helyes: ' + corrText, 'bad');
+    }
+  } else {
+    setExplain('', false);
+    setFeedback('', '');
+  }
+  updateButtons();
+}
+
+function updateButtons() {
+  const q = state.picked[state.idx];
+  const a = state.answers[state.idx];
+  const hasAnswer = a !== null && (Array.isArray(a) ? a.length>0 : true);
+  if (!state.examMode) {
+    el('checkBtn').disabled = !hasAnswer;
+  }
+  // Tanuló mód: csak ellenőrzés után lehessen továbblépni (opcionális)
+  const checked = Array.isArray(state.checked) ? !!state.checked[state.idx] : false;
+  const lock = !!state.learnMode && !!state.requireCheck && !state.examMode;
+  const nextAssisted = lock && !checked;
+  el('nextBtn').disabled = nextAssisted;
+  el('finishBtn').disabled = nextAssisted;
+}
+
+function arraysEqualAsSet(a,b) {
+  const sa = new Set(a); const sb = new Set(b);
+  if (sa.size !== sb.size) return false;
+  for (const x of sa) if (!sb.has(x)) return false;
+  return true;
+}
+
+function checkCurrent() {
+  const q = state.picked[state.idx];
+  const a = state.answers[state.idx];
+  if (a === null) return;
+  if (state.learnMode && Array.isArray(state.checked)) { state.checked[state.idx] = true; }
+  const correct = q.correct || [];
+  let ok = false;
+
+  if (correct.length <= 1) {
+    ok = (a === correct[0]);
+  } else {
+    if (!Array.isArray(a)) ok = false;
+    else ok = arraysEqualAsSet(a, correct);
+  }
+
+  if (ok) {
+    setFeedback('Helyes ✅', 'ok');
+  } else {
+    const corrText = (correct || []).map(i => q.options[i]).join(' | ');
+    setFeedback('Helytelen ❌  Helyes: ' + corrText, 'bad');
+  }
+
+  if (state.learnMode) renderReviewForCurrent();
+  updateButtons();
+  saveProgress('check');
+}
+function next() {
+  commitTime();
+  if (state.idx < state.picked.length - 1) {
+    state.idx++;
+    state.maxReached = Math.max(state.maxReached || 0, state.idx);
+    render();
+  }
+  saveProgress('next');
+}
+function prev() {
+  if (state.noBack) return;
+  commitTime();
+  if (state.idx > 0) {
+    state.idx--;
+    render();
+  }
+  saveProgress('prev');
+}
+
+function finishQuiz(auto=false) {
+  commitTime();
+  if (state.timerInt) {
+    clearInterval(state.timerInt);
+    state.timerInt = null;
+  }
+  state.elapsedSec = Math.floor((Date.now() - state.startedAt)/1000);
+
+
+  function renderAnalysis(rows){
+    const tb = el('topicBreakdown');
+    const wl = el('weakList');
+    if (!tb || !wl) return;
+    // topic breakdown based on this run
+    const byT = new Map();
+    for (const r of rows){
+      const t = r.topic || 'Egyéb';
+      if (!byT.has(t)) byT.set(t, {total:0, ok:0, pts:0, ptsOk:0, time:0});
+      const o = byT.get(t);
+      o.total += 1;
+      o.ok += r.ok ? 1 : 0;
+      o.pts += (Number(r.points||1)||1);
+      o.ptsOk += r.ok ? (Number(r.points||1)||1) : 0;
+      o.time += (Number(r.timeSec||0)||0);
+    }
+    const items = Array.from(byT.entries()).map(([t,o]) => {
+      const pct = o.total ? Math.round(100*o.ok/o.total) : 0;
+      const ptPct = o.pts ? Math.round(100*o.ptsOk/o.pts) : 0;
+      const avg = o.total ? Math.round(o.time/o.total) : 0;
+      return {topic:t, total:o.total, pct, ptPct, avg};
+    }).sort((a,b) => a.pct - b.pct);
+
+    tb.innerHTML = `
+      <thead><tr><th>Téma</th><th>Találat</th><th>Pont</th><th>Átlagidő</th></tr></thead>
+      <tbody>
+        ${items.map(x => `<tr><td>${escapeHtml(x.topic)}</td><td>${x.pct}% (${x.total} kérdés)</td><td>${x.ptPct}%</td><td>${fmtTime(x.avg)}</td></tr>`).join('')}
+      </tbody>
+    `;
+
+    // Weak list from overall stats (seen>=3), top 10 lowest accuracy
+    const all = (BANK.questions||[]).map(q => {
+      const s = getQStat(q.id);
+      const seen = s.seen||0;
+      const acc = seen ? (s.correct||0)/seen : 1;
+      return {q, seen, acc, wrong:s.wrong||0};
+    }).filter(x => x.seen >= 3).sort((a,b) => a.acc - b.acc).slice(0,10);
+
+    wl.innerHTML = '';
+    for (const it of all){
+      const q = it.q;
+      const div = document.createElement('div');
+      div.className = 'reviewItem';
+      div.innerHTML = `
+        <div class="row" style="justify-content: space-between;">
+          <div><span class="tag-warn">Gyenge</span> • ID: <span class="mono">${escapeHtml(String(q.id))}</span></div>
+          <div class="small">${escapeHtml(q.topic||'')}${q.page ? (' • oldal: '+escapeHtml(String(q.page))) : ''}</div>
+        </div>
+        <div class="divider"></div>
+        <div class="qtext">${escapeHtml(String(q.question||'').slice(0,220))}${(String(q.question||'').length>220?'…':'')}</div>
+        <div class="small" style="margin-top:8px;">Pontosság: <b>${Math.round(it.acc*100)}%</b> • Látta: ${it.seen}× • Hibák: ${it.wrong}×</div>
+      `;
+      wl.appendChild(div);
+    }
+    if (!wl.childElementCount){
+      wl.innerHTML = `<div class="small muted" style="margin-top:10px;">Még nincs elég adat (legalább 3 próbálkozás / kérdés kell a “gyenge” listához).</div>`;
+    }
+  }
+
+  const rows = [];
+  let got = 0, total = 0;
+  let gotPts = 0, totalPts = 0;
+
+  state.picked.forEach((q, idx) => {
+    const pts = Number(q.points || 1);
+    totalPts += pts;
+
+    const a = state.answers[idx];
+    const tSec = (Array.isArray(state.timeByIdx) && typeof state.timeByIdx[idx] === 'number') ? state.timeByIdx[idx] : 0;
+    const correct = q.correct || [];
+    let ok = false;
+
+    if (correct.length <= 1) {
+      ok = (a === correct[0]);
+    } else {
+      ok = Array.isArray(a) && arraysEqualAsSet(a, correct);
+    }
+
+    total++;
+    if (ok) { got++; gotPts += pts; }
+
+    const userText = a === null ? '' : (Array.isArray(a) ? a.map(i=>q.options[i]).join(' | ') : q.options[a]);
+    const corrText = correct.map(i => q.options[i]).join(' | ');
+    rows.push({
+      idx: idx+1,
+      id: q.id,
+      topic: q.topic,
+      page: q.page,
+      points: pts,
+      ok,
+      timeSec: tSec,
+      question: q.question,
+      user: userText,
+      correct: corrText
+    });
+  });
+
+  LAST_WRONG_IDS = rows.filter(r => !r.ok).map(r => r.id);
+
+  // Render result
+  quiz.classList.add('hidden');
+  result.classList.remove('hidden');
+
+  // Completed: clear saved "resume" state
+  clearProgress();
+
+  const pct = total ? Math.round((got/total)*100) : 0;
+  el('scoreBig').textContent = pct + '%';
+  el('pointsBig').textContent = `${gotPts} / ${totalPts}`;
+  el('timeBig').textContent = fmtTime(state.elapsedSec);
+
+  // Exam pass/fail
+  const passCard = el('passCard');
+  if (passCard){
+    if (state.examMode){
+      passCard.style.display = '';
+      const passed = (pct >= (state.passPct ?? 70));
+      el('passBig').textContent = passed ? 'SIKERÜLT ✅' : 'NEM SIKERÜLT ❌';
+      el('passLbl').textContent = `Küszöb: ${state.passPct ?? 70}%`;
+    } else {
+      passCard.style.display = 'none';
+    }
+  }
+
+  // Update stats
+  try {
+    rows.forEach(r => { recordAnswer(r.id, !!r.ok, r.timeSec || 0); });
+    const hist = {
+      ts: new Date().toISOString(),
+      mode: state.examMode ? 'Vizsga' : 'Gyakorlás',
+      total,
+      correct: got,
+      pct,
+      points: gotPts,
+      totalPoints: totalPts,
+      elapsedSec: state.elapsedSec,
+      source: (el('sourceFilter') ? el('sourceFilter').value : 'all')
+    };
+    if (state.examMode) hist.pass = (pct >= (state.passPct ?? 70));
+    STATS.history.push(hist);
+    saveStats();
+    renderStatsSummary();
+    try { renderAnalysis(rows); } catch(e){}
+  } catch(e) { console.warn('stats update failed', e); }
+
+  const review = el('review');
+  review.innerHTML = '';
+
+  rows.forEach(r => {
+    if (r.ok) return;
+    const div = document.createElement('div');
+    div.className = 'reviewItem';
+    div.innerHTML = `
+      <div class="row" style="justify-content: space-between;">
+        <div><span class="tag-bad">Hibás</span> • #${r.idx} • ID: <span class="mono">${r.id}</span></div>
+        <div class="small">${r.topic || ''}${r.page ? (' • oldal: '+r.page) : ''}</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qtext">${escapeHtml(r.question || '')}</div>
+      <div class="small" style="margin-top:10px;"><b>Te:</b> ${escapeHtml(r.user || '(nincs válasz)')}</div>
+      <div class="small" style="margin-top:6px;"><b>Helyes:</b> ${escapeHtml(r.correct || '')}</div>
+    `;
+    review.appendChild(div);
+  });
+
+  if (!review.childElementCount) {
+    const div = document.createElement('div');
+    div.className = 'reviewItem';
+    div.innerHTML = `<span class="tag-ok">Minden válasz helyes 🎉</span>`;
+    review.appendChild(div);
+  }
+
+  // Download CSV
+  el('downloadBtn').onclick = () => {
+    const header = ['sorszam','id','tema','oldal','pont','helyes','kerdes','te_valaszod','helyes_valasz'];
+    const csv = [header.join(';')].concat(rows.map(r => [
+      r.idx, r.id, (r.topic||''), (r.page||''), r.points, r.ok ? 'IGAZ' : 'HAMIS',
+      (r.question||'').replaceAll('\n',' '),
+      (r.user||''),
+      (r.correct||'')
+    ].map(x => String(x).replaceAll(';',',')).join(';'))).join('\n');
+
+    const blob = new Blob([csv], {type: 'text/csv;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'teszt_eredmeny.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replaceAll('&','&amp;')
+    .replaceAll('<','&lt;')
+    .replaceAll('>','&gt;')
+    .replaceAll('"','&quot;')
+    .replaceAll("'","&#039;");
+}
+
+// Wire buttons
+el('startBtn').addEventListener('click', () => startQuiz());
+
+// Tanuló mód UI kapcsolat
+if (el('learnMode') && el('requireCheck')) {
+  const syncLearnUI = () => {
+    const on = !!el('learnMode').checked;
+    el('requireCheck').disabled = !on;
+    if (!on) el('requireCheck').checked = false;
+    if (on) el('requireCheck').checked = true;
+  };
+  // initial
+  syncLearnUI();
+  el('learnMode').addEventListener('change', syncLearnUI);
+  // Vizsga mód bekapcsolásakor kapcsoljuk ki a tanuló módot
+  if (el('examMode')) {
+    el('examMode').addEventListener('change', () => {
+      if (el('examMode').checked) {
+        el('learnMode').checked = false;
+        syncLearnUI();
+      }
+    });
+  }
+}
+el('sampleBtn').addEventListener('click', () => startQuiz(10));
+
+const wrongBtn = el('wrongPracticeBtn');
+if (wrongBtn){
+  wrongBtn.addEventListener('click', () => {
+    if (el('sourceFilter')) el('sourceFilter').value = 'wrong';
+    startQuiz(15);
+  });
+}
+const bmBtn = el('bookmarkedPracticeBtn');
+if (bmBtn){
+  bmBtn.addEventListener('click', () => {
+    if (el('sourceFilter')) el('sourceFilter').value = 'bookmarked';
+    startQuiz(15);
+  });
+}
+
+// Exam options visibility
+const examCb = el('examMode');
+function syncExamUI(){
+  const on = !!examCb?.checked;
+  el('examOpts')?.style && (el('examOpts').style.display = on ? '' : 'none');
+  const hint = el('examHint');
+  if (hint) hint.style.display = on ? '' : 'none';
+}
+if (examCb){
+  examCb.addEventListener('change', syncExamUI);
+  syncExamUI();
+}
+
+// Stats controls
+const rs = el('resetStatsBtn');
+if (rs){
+  rs.addEventListener('click', () => {
+    if (!confirm('Biztosan törlöd a statisztikát?')) return;
+    safeLSRemove(STATS_KEY);
+    STATS = loadStats();
+    renderStatsSummary();
+    alert('Statisztika törölve.');
+  });
+}
+const es = el('exportStatsBtn');
+if (es){
+  es.addEventListener('click', () => {
+    exportJson('villanyszerelo_stats.json', STATS);
+  });
+}
+
+const im = el('importStatsBtn');
+if (im){
+  im.addEventListener('click', async () => {
+    try{
+      const f = el('importStatsFile')?.files?.[0];
+      if (!f) return alert('Válassz ki egy villanyszerelo_stats.json fájlt!');
+      const txt = await f.text();
+      const obj = JSON.parse(txt);
+      if (!obj || typeof obj !== 'object' || !obj.questions) return alert('Hibás statisztika fájl.');
+      if (!confirm('Importáljam a statisztikát? (felülírja a mostani statokat)')) return;
+      safeLSSet(STATS_KEY, JSON.stringify(obj));
+      STATS = loadStats();
+      renderStatsSummary();
+      alert('Statisztika importálva.');
+    }catch(e){
+      console.warn(e);
+      alert('Nem sikerült importálni a statisztikát.');
+    }
+  });
+}
+el('prevBtn').addEventListener('click', prev);
+el('nextBtn').addEventListener('click', next);
+el('finishBtn').addEventListener('click', () => finishQuiz(false));
+el('checkBtn').addEventListener('click', checkCurrent);
+const bookmarkBtn = el('bookmarkBtn');
+if (bookmarkBtn){
+  bookmarkBtn.addEventListener('click', () => {
+    const q = state ? state.picked[state.idx] : null;
+    if (q) { toggleBookmark(q.id); }
+    render();
+  });
+}
+
+const cheatBtn = el('cheatBtn');
+if (cheatBtn){
+  const open = () => { el('cheatModal')?.classList.remove('hidden'); };
+  const close = () => { el('cheatModal')?.classList.add('hidden'); };
+  cheatBtn.addEventListener('click', open);
+  el('cheatCloseBtn')?.addEventListener('click', close);
+  el('cheatModal')?.addEventListener('click', (e) => { if (e.target === el('cheatModal')) close(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+}
+
+el('markBtn').addEventListener('click', () => {
+  if (state.marked.has(state.idx)) state.marked.delete(state.idx);
+  else state.marked.add(state.idx);
+  render();
+});
+
+// v20 wiring (stabil: DOM betöltése után kötünk mindent, hogy biztosan meglegyenek az elemek)
+function wireV20(){
+  // Ne törjünk el akkor sem, ha valami hiányzik – inkább degradáljunk.
+  try { renderDiagSummary(); } catch (e) { console.warn('diag summary failed', e); }
+
+  // Önellőrzés / hibanapló
+  try {
+    el('diagBtn')?.addEventListener('click', openDiag);
+    el('exportDiagBtn')?.addEventListener('click', () => {
+      try { exportDiagnostics(); }
+      catch (e) { console.warn('export failed', e); alert('Nem sikerült exportálni a hibanaplót.'); }
+    });
+
+    const closeBtns = [el('diagCloseBtn'), el('diagCloseBtn2')].filter(Boolean);
+    closeBtns.forEach(btn => btn.addEventListener('click', closeDiag));
+
+    const modal = el('diagModal');
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        const t = e.target;
+        if (t === modal) return closeDiag();
+        if (t && t.classList && t.classList.contains('modal-backdrop')) return closeDiag();
+      });
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      const m = el('diagModal');
+      if (m && m.getAttribute('aria-hidden') === 'false') closeDiag();
+    });
+  } catch (e) {
+    console.warn('diagnostics wiring failed', e);
+  }
+
+// Folytatás (mentett állapot)
+  try {
+    const pb = loadProgress();
+    if (pb) {
+      const card = el('resumeCard');
+      const info = el('resumeInfo');
+      if (info) {
+        const ts = pb.saved_at ? new Date(pb.saved_at).toLocaleString('hu-HU') : 'ismeretlen';
+        const answered = pb.answers ? pb.answers.filter(x => x !== null && (!Array.isArray(x) || x.length>0)).length : 0;
+        const total = pb.pickedIds ? pb.pickedIds.length : 0;
+        const pos = (Number.isFinite(pb.idx) ? (pb.idx + 1) : 1);
+        info.textContent = `Elmentett állapot: ${ts} • megválaszolva: ${answered}/${total} • pozíció: ${pos}/${total}`;
+      }
+      if (card) card.style.display = '';
+      el('resumeBtn')?.addEventListener('click', () => {
+        try { resumeFromProgress(pb); }
+        catch (e) { console.error(e); alert('Nem sikerült folytatni. Töröld a mentést és indíts új tesztet.'); }
+      });
+      el('discardBtn')?.addEventListener('click', () => {
+        clearProgress();
+        location.reload();
+      });
+    }
+  } catch(e){
+    console.warn('resume wiring failed', e);
+  }
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wireV20);
+else wireV20();
+
+el('quitBtn').addEventListener('click', () => {
+  if (confirm('Biztos kilépsz? Az eddigi válaszok elvesznek.')) {
+    if (state?.timerInt) clearInterval(state.timerInt);
+    state = null;
+    quiz.classList.add('hidden');
+    result.classList.add('hidden');
+    setup.classList.remove('hidden');
+  }
+});
+el('restartBtn').addEventListener('click', () => {
+  state = null;
+  result.classList.add('hidden');
+  
+const weakBtn = el('weakWorksheetBtn');
+if (weakBtn){
+  weakBtn.addEventListener('click', () => {
+    // quick practice: prefer the wrong questions from the last run, else fall back to "weak"
+    result.classList.add('hidden');
+    setup.classList.remove('hidden');
+    if (LAST_WRONG_IDS && LAST_WRONG_IDS.length){
+      // set filters to pick those ids via search
+      el('searchText').value = LAST_WRONG_IDS.join(' ');
+      el('sourceFilter').value = 'all';
+      el('numQ').value = Math.min(30, Math.max(5, LAST_WRONG_IDS.length));
+    } else {
+      el('sourceFilter').value = 'weak';
+      el('numQ').value = 20;
+    }
+    startQuiz();
+  });
+}
+setup.classList.remove('hidden');
+});
+
+// defaults
+// pre-select none (all topics)
+
+})();
+
+
+</script>
+
+  <!-- Diagnostics Modal -->
+  <div class="modal" id="diagModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close="1"></div>
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="diagTitle">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title" id="diagTitle">Önellenőrzés részletek</div>
+          <div class="modal-sub" id="diagSub">—</div>
+        </div>
+        <button class="icon-btn" id="diagCloseBtn" title="Bezárás" aria-label="Bezárás">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="diag-list" id="diagList"></div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn" id="diagCloseBtn2" type="button">Bezárás</button>
+      </div>
+    </div>
+  </div>
+
+
+<div class="modal-backdrop hidden" id="cheatModal">
+  <div class="modal">
+    <div class="row" style="justify-content: space-between; align-items:center;">
+      <div style="font-weight:900; font-size:16px;">Puskakártya (gyors emlékeztető)</div>
+      <button class="btn" id="cheatCloseBtn" type="button">Bezár</button>
+    </div>
+    <div class="divider"></div>
+    <div class="small muted">
+      Nem “megoldás”, csak gyors pót-aggya: képletek, jelölések, tipikus értékek.
+    </div>
+    <div class="divider"></div>
+    <table class="table">
+      <thead><tr><th>Téma</th><th>Gyors formula / emlékeztető</th></tr></thead>
+      <tbody>
+        <tr><td><b>Ohm / teljesítmény</b></td><td class="mono">U = I·R • I = U/R • P = U·I = I²·R = U²/R</td></tr>
+        <tr><td><b>3 fázis</b></td><td class="mono">P ≈ √3 · U<sub>v</sub> · I · cosφ (szimmetrikus terhelés)</td></tr>
+        <tr><td><b>Cosφ</b></td><td>Induktív terhelésnél cosφ&lt;1 → nagyobb áram ugyanahhoz a P-hez.</td></tr>
+        <tr><td><b>FI-relé (RCD)</b></td><td>30 mA: személyvédelem (tipikusan) • 100/300 mA: tűzvédelem/selektív.</td></tr>
+        <tr><td><b>PE/N/PEN</b></td><td>PE: védő • N: nullavezető • PEN: kombinált (TN-C). PEN szétválasztás: TN-C-S.</td></tr>
+        <tr><td><b>Szigetelési ellenállás</b></td><td>Megger: DC tesztfesz. (pl. 250/500/1000 V) → MΩ nagyságrend.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</body>
+</html>
