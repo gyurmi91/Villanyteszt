@@ -175,6 +175,41 @@
 .toast.hidden { display:none; }
 .toast .t1{ font-weight:900; }
 .toast .t2{ font-size:12px; color:var(--muted); margin-top:2px; }
+
+/* --- v42 online polish: update banner + mobile sticky actions --- */
+.update{
+  margin: 10px 0 18px 0;
+  padding: 14px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(124,58,237,.35);
+  background: linear-gradient(180deg, rgba(124,58,237,.18), rgba(255,255,255,.03));
+}
+.update .u1{ font-weight: 800; }
+.update .u2{ color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+@media (max-width: 680px){
+  .wrap{ padding: 16px; }
+  .title{ font-size: 18px; }
+  .btn{ padding: 14px 14px; border-radius: 16px; }
+  label.chk{ padding: 12px 14px; }
+  input[type="number"], select{ padding: 12px 14px; border-radius: 14px; }
+  .opt{ padding: 14px 14px; }
+  .opt input{ transform: scale(1.15); margin-top: 4px; }
+  .quizSticky{
+    position: sticky;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    z-index: 50;
+    background: rgba(18,20,28,.92);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,.10);
+    border-radius: 18px;
+    padding: 10px;
+  }
+  .quizSticky > .row{ align-items: stretch; }
+  .quizSticky .btn{ min-height: 46px; }
+  .quizSticky .row{ width: 100%; }
+}
+
 </style>
 </head>
 <body>
@@ -182,13 +217,23 @@
 <div class="top">
 <div>
 <div class="title">Villanyszerelő – interaktív gyakorló teszt</div>
-<div class="meta">Összes kérdés: <span id="allCount"></span> • Generálva: <span id="genAt"></span></div>
+<div class="meta">Összes kérdés: <span id="allCount"></span> • Generálva: <span id="genAt"></span> • Verzió: <span id="appVer"></span></div>
 </div>
 <div class="row">
 <span class="pill">Offline HTML</span>
 <span class="pill">Pontozás + kiértékelés</span>
 <span class="pill">Véletlen sorrend</span>
+
+<span class="pill">Verzió: <span id="appVerPill"></span></span>
 </div>
+</div>
+<div id="updateBanner" class="update hidden" role="status" aria-live="polite">
+  <div class="u1"><b>Frissítés érhető el</b> • új verzió: <span id="remoteVer">–</span></div>
+  <div class="u2">Ha nem frissült magától, kattints az újratöltésre.</div>
+  <div class="row" style="gap:10px; margin-top:10px; flex-wrap:wrap;">
+    <button class="btn primary" id="reloadNowBtn" type="button">Újratöltés</button>
+    <button class="btn" id="dismissUpdateBtn" type="button">Most nem</button>
+  </div>
 </div>
 <!-- SETUP -->
 <div class="card" id="setup">
@@ -377,12 +422,14 @@
 <div class="qmedia" id="qMedia" style="display:none"></div>
 <div id="opts"></div>
 <div class="divider"></div>
+<div class="quizSticky" id="quizSticky">
 <div class="row" style="justify-content: space-between;">
 <button class="btn" id="prevBtn">← Előző</button>
 <div class="row">
 <button class="btn" id="checkBtn">Ellenőrzés</button>
 <button class="btn primary" id="nextBtn">Következő →</button>
 <button class="btn good hidden" id="finishBtn">Befejezés</button>
+</div>
 </div>
 </div>
 <div class="small" id="feedback" style="margin-top:12px;"></div>
@@ -439,6 +486,48 @@
 (async () => {
   const el = (id) => document.getElementById(id);
   const BANK_OVERRIDE_KEY = 'villanyszerelo_interaktiv_teszt_bank_override_v1';
+
+  // --- v42: online verzió + cache kezelés ---
+  const APP_VERSION = 'v42';
+  const BUILD_AT = '2025-12-29 17:21:51';
+  const CACHE_BUSTER = encodeURIComponent(APP_VERSION); // egyszerű és stabil
+  function withCb(url){
+    if (!url) return url;
+    const u = String(url);
+    if (u.startsWith('data:')) return u;
+    const sep = u.includes('?') ? '&' : '?';
+    return u + sep + 'v=' + CACHE_BUSTER;
+  }
+  function setVersionUI(){
+    try {
+      const v = APP_VERSION;
+      const a = el('appVer'); if (a) a.textContent = v;
+      const p = el('appVerPill'); if (p) p.textContent = v;
+    } catch(e){}
+  }
+  setVersionUI();
+
+  async function checkForUpdates(){
+    try {
+      const r = await fetch('version.json?cb=' + Date.now(), { cache: 'no-store' });
+      if (!r.ok) return;
+      const data = await r.json();
+      const remote = data && data.version ? String(data.version) : '';
+      if (remote && remote !== APP_VERSION){
+        const b = el('updateBanner'); if (!b) return;
+        const rv = el('remoteVer'); if (rv) rv.textContent = remote;
+        b.classList.remove('hidden');
+      }
+    } catch(e){ /* ignore */ }
+  }
+  checkForUpdates();
+  el('dismissUpdateBtn')?.addEventListener('click', () => { el('updateBanner')?.classList.add('hidden'); });
+  el('reloadNowBtn')?.addEventListener('click', () => {
+    const u = new URL(location.href);
+    u.searchParams.set('v', String(Date.now()));
+    location.href = u.toString();
+  });
+
 
   // v28: toast / timing / spaced repetition helpers
   function showToast(title, msg){
@@ -585,7 +674,7 @@
 
     // 2) fetch questions.json (works when served via local server)
     try {
-      const r = await fetch('questions.json', { cache: 'no-store' });
+      const r = await fetch(withCb('questions.json'), { cache: 'no-store' });
       if (r.ok){
         const obj = await r.json();
         setBankStatus('✅ Kérdésbank: questions.json betöltve.');
@@ -1295,7 +1384,7 @@ function render(){
   if (qMedia){
     if (q.image){
       const alt = q.image_alt || "Ábra";
-      qMedia.innerHTML = `<img src="${q.image}" alt="${alt}">`;
+      qMedia.innerHTML = `<img src="${withCb(q.image)}" alt="${alt}">`;
       qMedia.style.display = "block";
     } else {
       qMedia.innerHTML = "";
@@ -1775,6 +1864,61 @@ if (im){
     }catch(e){
       console.warn(e);
       alert('Nem sikerült importálni a statisztikát.');
+    }
+  });
+}
+
+// Teljes mentés (statisztika + félbehagyott teszt + bank override)
+const exAll = el('exportAllBtn');
+if (exAll){
+  exAll.addEventListener('click', () => {
+    const backup = {
+      schema: 1,
+      app_version: APP_VERSION,
+      built_at: BUILD_AT,
+      exported_at: new Date().toISOString(),
+      stats: STATS,
+      resume_state: safeLSGet(LS_KEY),
+      bank_override: safeLSGet(BANK_OVERRIDE_KEY)
+    };
+    exportJson('villanyteszt_backup.json', backup);
+  });
+}
+const imAll = el('importAllBtn');
+if (imAll){
+  imAll.addEventListener('click', async () => {
+    try{
+      const f = el('importAllFile')?.files?.[0];
+      if (!f) return alert('Válassz ki egy villanyteszt_backup.json fájlt!');
+      const txt = await f.text();
+      const obj = JSON.parse(txt);
+      if (!obj || typeof obj !== 'object' || !obj.stats) return alert('Hibás mentésfájl.');
+      if (!confirm('Importáljam a teljes mentést? (felülírja a statisztikát és a félbehagyott tesztet is)')) return;
+
+      // stats
+      safeLSSet(STATS_KEY, JSON.stringify(obj.stats));
+      STATS = loadStats();
+
+      // resume
+      if (obj.resume_state != null && String(obj.resume_state).trim()){
+        safeLSSet(LS_KEY, String(obj.resume_state));
+      } else {
+        safeLSRemove(LS_KEY);
+      }
+
+      // bank override (ha van)
+      if (obj.bank_override != null && String(obj.bank_override).trim()){
+        safeLSSet(BANK_OVERRIDE_KEY, String(obj.bank_override));
+      } else {
+        safeLSRemove(BANK_OVERRIDE_KEY);
+      }
+
+      renderStatsSummary();
+      showToast('Mentés importálva', 'Frissítem az oldalt…');
+      setTimeout(() => location.reload(), 350);
+    }catch(e){
+      console.warn(e);
+      alert('Nem sikerült importálni a mentést.');
     }
   });
 }
